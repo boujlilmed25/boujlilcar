@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Password Reset Tool</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; max-width: 400px; }
+        h1 { color: #333; font-size: 1.5rem; margin-bottom: 1rem; }
+        p { color: #666; line-height: 1.5; margin-bottom: 1.5rem; }
+        button { background-color: #4CAF50; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 1rem; transition: background 0.3s; }
+        button:hover { background-color: #45a049; }
+        #status { margin-top: 1.5rem; font-weight: bold; display: none; }
+        .success { color: #2e7d32; }
+        .error { color: #c62828; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Admin Reset Tool</h1>
+        <p>Click the button below to reset your admin password to <strong>admin123</strong> and disable 2FA.</p>
+        <button onclick="resetAdmin()">Reset Admin Credentials</button>
+        <div id="status"></div>
+    </div>
+
+    <script>
+        function resetAdmin() {
+            const statusEl = document.getElementById('status');
+            try {
+                const key = 'drivo_settings';
+                const raw = localStorage.getItem(key);
+                let settings = raw ? JSON.parse(raw) : {};
+                
+                // Reset password and disable 2FA
+                settings.password = 'admin123';
+                settings.twoFAEnabled = false;
+                settings.twoFASecret = null;
+                
+                localStorage.setItem(key, JSON.stringify(settings));
+                localStorage.removeItem('drivo_lock'); // Clear any login lockouts
+                
+                statusEl.innerHTML = "✅ Success! Password reset to: <strong>admin123</strong><br>2FA has been disabled.<br><br><a href='drivo-admin.html'>Go to Admin Panel</a>";
+                statusEl.className = "success";
+                statusEl.style.display = "block";
+            } catch (e) {
+                statusEl.innerText = "❌ Error: " + e.message;
+                statusEl.className = "error";
+                statusEl.style.display = "block";
+            }
+        }
+    </script>
+</body>
+</html>
